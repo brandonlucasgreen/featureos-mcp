@@ -1,0 +1,16 @@
+{
+  "name": "featureos-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for the FeatureOS API",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "featureos-mcp": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  }
+}
