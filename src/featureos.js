@@ -115,5 +115,21 @@ export function createClient(apiKey) {
     deleteComment(id) {
       return request("DELETE", `/comments/${id}`);
     },
+
+    // ── Merge Posts ──────────────────────────────────────────────────────────
+
+    listMergedPosts(parentId) {
+      return request("GET", `/feature_requests/${parentId}/merge_posts`);
+    },
+
+    mergePosts(parentId, childIds) {
+      return request("POST", `/feature_requests/${parentId}/merge_posts`, {
+        body: { child_feature_request_ids: childIds },
+      });
+    },
+
+    unmergePost(childId) {
+      return request("DELETE", `/feature_requests/unmerge/${childId}`);
+    },
   };
 }

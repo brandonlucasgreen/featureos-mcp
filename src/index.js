@@ -255,6 +255,58 @@ server.tool(
   }
 );
 
+// ── Merge Posts ──────────────────────────────────────────────────────────────
+
+server.tool(
+  "list_merged_posts",
+  "List all child posts that have been merged into a parent post.",
+  {
+    parent_id: z.number().int().describe("Parent post ID"),
+  },
+  async ({ parent_id }) => {
+    try {
+      return ok(await api.listMergedPosts(parent_id));
+    } catch (e) {
+      return err(e);
+    }
+  }
+);
+
+server.tool(
+  "merge_posts",
+  "Merge one or more posts into a parent post. Votes, comments, and subscribers are consolidated into the parent.",
+  {
+    parent_id: z.number().int().describe("Parent post ID to merge into"),
+    child_post_ids: z
+      .array(z.number().int())
+      .min(1)
+      .max(30)
+      .describe("Array of post IDs to merge into the parent (max 30)"),
+  },
+  async ({ parent_id, child_post_ids }) => {
+    try {
+      return ok(await api.mergePosts(parent_id, child_post_ids));
+    } catch (e) {
+      return err(e);
+    }
+  }
+);
+
+server.tool(
+  "unmerge_post",
+  "Unmerge a previously merged child post, restoring it as an independent post.",
+  {
+    child_post_id: z.number().int().describe("The merged child post ID to unmerge"),
+  },
+  async ({ child_post_id }) => {
+    try {
+      return ok(await api.unmergePost(child_post_id));
+    } catch (e) {
+      return err(e);
+    }
+  }
+);
+
 // ── Start ─────────────────────────────────────────────────────────────────────
 
 const transport = new StdioServerTransport();
