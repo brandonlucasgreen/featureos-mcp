@@ -7,7 +7,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { createClient } from "./featureos.js";
 
-const api = createClient(process.env.FEATUREOS_API_KEY);
+const api = createClient(process.env.FEATUREOS_API_KEY, process.env.FEATUREOS_JWT_TOKEN);
 
 const server = new McpServer({
   name: "featureos",

@@ -3,16 +3,20 @@
 
 const BASE = "https://api.featureos.app/api/v3";
 
-export function createClient(apiKey) {
+export function createClient(apiKey, jwtToken) {
   if (!apiKey) throw new Error("FEATUREOS_API_KEY is required");
 
   function headers(extra = {}) {
-    return {
+    const h = {
       "API-KEY": apiKey,
       "Content-Type": "application/json",
       "ALLOW-PRIVATE": "true",
       ...extra,
     };
+    if (jwtToken) {
+      h["Authorization"] = `Bearer ${jwtToken}`;
+    }
+    return h;
   }
 
   async function request(method, path, { params, body } = {}) {

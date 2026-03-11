@@ -29,6 +29,13 @@ MCP server for the [FeatureOS API](https://developers.featureos.app). Runs local
 | `update_comment` | Update comment text or pinned status |
 | `delete_comment` | Permanently delete a comment |
 
+### Merge Posts
+| Tool | Description |
+|---|---|
+| `list_merged_posts` | List all child posts merged into a parent post |
+| `merge_posts` | Merge one or more posts into a parent (max 30). Consolidates votes, comments, and subscribers. |
+| `unmerge_post` | Unmerge a child post, restoring it as independent |
+
 ## Setup
 
 ### 1. Install dependencies
@@ -42,7 +49,13 @@ npm install
 
 Dashboard → Settings → API Keys. Keys start with `hn_`.
 
-### 3. Configure Claude Desktop
+### 3. Get a JWT token (required for merge tools)
+
+The merge posts tools (`merge_posts`, `unmerge_post`, `list_merged_posts`) require a JWT token for user-level authentication in addition to the API key. Only organization members (admins or team members) can merge and unmerge posts.
+
+Generate a JWT token through your FeatureOS portal's [Single Sign-On settings](https://help.featureos.app/en/articles/setting-up-single-sign-on-for-your-featureos-portal).
+
+### 4. Configure Claude Desktop
 
 Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
@@ -53,7 +66,8 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
       "command": "node",
       "args": ["/absolute/path/to/featureos-mcp/src/index.js"],
       "env": {
-        "FEATUREOS_API_KEY": "hn_your_key_here"
+        "FEATUREOS_API_KEY": "hn_your_key_here",
+        "FEATUREOS_JWT_TOKEN": "your_jwt_token_here"
       }
     }
   }
@@ -62,7 +76,9 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 Replace `/absolute/path/to/featureos-mcp` with the actual path on your machine.
 
-### 4. Restart Claude Desktop
+> **Note:** `FEATUREOS_JWT_TOKEN` is optional — it is only needed if you want to use the merge posts tools. All other tools work with just the API key.
+
+### 5. Restart Claude Desktop
 
 The featureos tools will appear in the tools menu.
 
@@ -74,9 +90,13 @@ The featureos tools will appear in the tools menu.
 - "List all comments on post 5678"
 - "Add an internal comment to post 9012 saying we're investigating this"
 - "Delete comment 3456"
+- "List all posts merged into post 1234"
+- "Merge posts 5678 and 9012 into post 1234"
+- "Unmerge post 5678"
 
 ## Notes
 
 - FeatureOS has no explicit `rejected` status on posts — `reject_post` keeps the post as `pending`. Use `delete_post` if you want it gone entirely.
 - `create_comment` supports an `internal` flag for team-only notes not visible to the post submitter.
 - The `ALLOW-PRIVATE` header is sent on all requests so private board posts are always accessible.
+- Merge tools require a `FEATUREOS_JWT_TOKEN` environment variable. The JWT provides user-level authentication — only organization members (admins/team members) can merge and unmerge posts. Generate one via your portal's SSO settings.
